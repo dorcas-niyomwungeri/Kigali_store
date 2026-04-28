@@ -1,5 +1,5 @@
 <script setup>
-import { useCartStore } from '../stores/cart'
+import { useCartStore } from '../store/cart'
 import { useRouter } from 'vue-router'
 
 const cart = useCartStore()
@@ -47,6 +47,6 @@ button {
   margin-top: 20px;
   padding: 10px;
   background: black;
-  color: white;
+  color: rgb(222, 215, 215);
 }
 </style>
