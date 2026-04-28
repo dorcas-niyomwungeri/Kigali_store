@@ -37,7 +37,7 @@ const orders = ref([
 }
 
 .order {
-  border: 1px solid #ddd;
+  border: 1px solid #e5e3e3;
   padding: 10px;
   margin-bottom: 10px;
 }
