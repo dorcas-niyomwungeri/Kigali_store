@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
 
-const BASE = 'https://fakestoreapi.com'
+const BASE = 'https://fakestoreapi.com/'
 
 export const useProductsStore = defineStore('products', () => {
   const products = ref([])
@@ -13,14 +13,19 @@ export const useProductsStore = defineStore('products', () => {
   async function fetchProducts(category = null) {
     loading.value = true
     error.value = null
+
     try {
-      const url = category
-        ? `${BASE}/products/category/${category}`
-        : `${BASE}/products`
-      const { data } = await axios.get(url)
+      const res = await axios.get(`${BASE}/products`)
+      let data = res.data
+
+      if (category) {
+        data = data.filter(p => p.category === category)
+      }
+
       products.value = data
     } catch (e) {
-      error.value = 'Failed to load products.'
+      console.error(e)
+      error.value = 'Failed to load products'
     } finally {
       loading.value = false
     }
@@ -28,17 +33,19 @@ export const useProductsStore = defineStore('products', () => {
 
   async function fetchCategories() {
     try {
-      const { data } = await axios.get(`${BASE}/products/categories`)
-      categories.value = data
+      const res = await axios.get(`${BASE}/products`)
+      categories.value = [...new Set(res.data.map(p => p.category))]
     } catch (e) {
       console.error(e)
     }
   }
 
-  async function fetchProduct(id) {
-    const { data } = await axios.get(`${BASE}/products/${id}`)
-    return data
+  return {
+    products,
+    categories,
+    loading,
+    error,
+    fetchProducts,
+    fetchCategories
   }
-
-  return { products, categories, loading, error, fetchProducts, fetchCategories, fetchProduct }
 })

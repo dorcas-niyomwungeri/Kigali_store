@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useCartStore = defineStore('cart', () => {
   const items = ref(JSON.parse(localStorage.getItem('kts_cart') || '[]'))
@@ -7,41 +7,52 @@ export const useCartStore = defineStore('cart', () => {
   const total = computed(() =>
     items.value.reduce((sum, item) => sum + item.price * item.qty, 0)
   )
-  const count = computed(() =>
-    items.value.reduce((sum, item) => sum + item.qty, 0)
-  )
-  const tax = computed(() => total.value * 0.18)
-  const shipping = computed(() => (total.value > 100 ? 0 : 9.99))
-  const grandTotal = computed(() => total.value + tax.value + shipping.value)
 
-  function add(product, qty = 1) {
+  function save() {
+    localStorage.setItem('kts_cart', JSON.stringify(items.value))
+  }
+
+  function add(product) {
     const existing = items.value.find(i => i.id === product.id)
+
     if (existing) {
-      existing.qty += qty
+      existing.qty++
     } else {
-      items.value.push({ ...product, qty })
+      items.value.push({ ...product, qty: 1 })
     }
+
+    save()
   }
 
   function remove(id) {
     items.value = items.value.filter(i => i.id !== id)
+    save()
   }
 
-  function updateQty(id, qty) {
+  function increaseQty(id) {
     const item = items.value.find(i => i.id === id)
-    if (item) {
-      if (qty <= 0) remove(id)
-      else item.qty = qty
-    }
+    if (item) item.qty++
+    save()
+  }
+
+  function decreaseQty(id) {
+    const item = items.value.find(i => i.id === id)
+    if (item && item.qty > 1) item.qty--
+    save()
   }
 
   function clear() {
     items.value = []
+    save()
   }
 
-  watch(items, val => {
-    localStorage.setItem('kts_cart', JSON.stringify(val))
-  }, { deep: true })
-
-  return { items, total, count, tax, shipping, grandTotal, add, remove, updateQty, clear }
+  return {
+    items,
+    total,
+    add,
+    remove,
+    increaseQty,
+    decreaseQty,
+    clear
+  }
 })

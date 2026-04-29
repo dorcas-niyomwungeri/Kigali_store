@@ -68,6 +68,7 @@ import { useCartStore } from '../store/cart'
 import { useWishlistStore } from '../store/wishlist'
 import { useAuthStore } from '../store/auth'
 
+
 const cart = useCartStore()
 const wishlist = useWishlistStore()
 const auth = useAuthStore()
@@ -102,6 +103,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   backdrop-filter: blur(16px);
   border-bottom: 1px solid transparent;
   transition: border-color 0.3s;
+  height: 100px;
 }
 .header.scrolled { border-bottom-color: var(--border); }
 .header-inner {
@@ -112,6 +114,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   display: flex; align-items: center; gap: 0.5rem;
   font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;
   flex-shrink: 0;
+  
 }
 .logo-icon { font-size: 1.4rem; }
 .accent { color: var(--accent); }
@@ -133,7 +136,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .search-btn:hover { background: var(--accent-dark); }
 
 .nav {
-  display: flex; align-items: center; gap: 1.25rem; margin-left: auto;
+  display: flex;gap: 1.25rem; margin-left: auto;
 }
 .nav a { font-size: 0.9rem; color: var(--text-muted); transition: color 0.2s; }
 .nav a:hover, .nav a.router-link-active { color: var(--text); }
