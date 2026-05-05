@@ -99,7 +99,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 <style scoped>
 .header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(10,10,10,0.85);
+  background: rgba(62, 59, 59, 0.85);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid transparent;
   transition: border-color 0.3s;
