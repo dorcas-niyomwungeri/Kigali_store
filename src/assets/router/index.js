@@ -16,11 +16,11 @@ const routes = [
   },
   {
     path: '/cart',
-    component: () => import('@/views/Cart.vue')
+    component: () => import('@/views/cart.vue')
   },
   {
     path: '/wishlist',
-    component: () => import('@/views/Wishlist.vue')
+    component: () => import('@/views/wishlist.vue')
   },
   {
     path: '/checkout',
@@ -46,7 +46,7 @@ const routes = [
     children: [
       { path: '', redirect: '/profile/orders' },
       { path: 'orders', component: () => import('@/views/ProfileOrders.vue') },
-      { path: 'wishlist', component: () => import('@/views/Wishlist.vue') },
+      { path: 'wishlist', component: () => import('@/views/wishlist.vue') },
       { path: 'settings', component: () => import('@/views/ProfileSettings.vue') }
     ]
   },
