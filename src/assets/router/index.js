@@ -20,7 +20,7 @@ const routes = [
   },
   {
     path: '/wishlist',
-    component: () => import('@/views/wishlist.vue')
+    component: () => import('@/views/Wishlist.vue')
   },
   {
     path: '/checkout',
