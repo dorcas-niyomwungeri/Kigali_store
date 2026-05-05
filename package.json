@@ -8,9 +8,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "engines": {
-    "node": "18.x"
-  },
+ "engines": {
+  "node": "24.x"
+},
   "dependencies": {
     "@stripe/stripe-js": "^2.2.0",
     "axios": "^1.6.0",
