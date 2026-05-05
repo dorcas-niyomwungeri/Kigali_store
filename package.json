@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
  "engines": {
-  "node": "20.x"
+  "node": "24.x"
 },
   "dependencies": {
     "@stripe/stripe-js": "^2.2.0",
