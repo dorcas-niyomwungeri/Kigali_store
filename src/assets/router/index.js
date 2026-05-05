@@ -16,7 +16,7 @@ const routes = [
   },
   {
     path: '/cart',
-    component: () => import('@/views/cart.vue')
+    component: () => import('@/views/Cart.vue')
   },
   {
     path: '/wishlist',

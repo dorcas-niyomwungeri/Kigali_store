@@ -6,35 +6,41 @@ import { computed, ref } from 'vue'
 const cart = useCartStore()
 const router = useRouter()
 const loading = ref(false)
+const error = ref('')
+
+const API_URL = import.meta.env.DEV
+  ? 'http://localhost:3000'
+  : import.meta.env.VITE_API_URL
 
 const total = computed(() =>
-  cart.items.reduce((sum, item) => sum + item.price * item.qty, 0).toFixed(2)
+  cart.items.reduce((sum, item) => sum + item.price * item.qty, 0)
 )
 
 const payNow = async () => {
-  if (loading.value) return  // prevent double-clicks
+  if (loading.value) return
+  error.value = ''
   loading.value = true
 
   try {
-    const res = await fetch('http://localhost:3000/create-checkout-session', {
+    const res = await fetch(`${API_URL}/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: cart.items })
     })
 
+    if (!res.ok) throw new Error('Server error')
+
     const data = await res.json()
-    console.log('Stripe response:', data)
 
     if (!data.url) {
-      alert('Stripe session failed — no URL returned')
-      return
+      throw new Error('Stripe session failed')
     }
 
     window.location.href = data.url
 
   } catch (err) {
     console.error(err)
-    alert('Error connecting to server')
+    error.value = 'Failed to connect to payment server'
   } finally {
     loading.value = false
   }
@@ -43,53 +49,129 @@ const payNow = async () => {
 
 <template>
   <div class="checkout">
-    <h1>Checkout</h1>
+    <div class="card">
+      <h1>Checkout</h1>
 
-    <div class="summary">
-      <div class="row" v-for="item in cart.items" :key="item.id">
-        <span>{{ item.title }} × {{ item.qty }}</span>
-        <span>${{ (item.price * item.qty).toFixed(2) }}</span>
+      <div v-if="cart.items.length === 0" class="empty">
+        Your cart is empty
       </div>
+
+      <div v-else class="summary">
+        <div class="row" v-for="item in cart.items" :key="item.id">
+          <div class="left">
+            <span class="title">{{ item.title }}</span>
+            <span class="qty">× {{ item.qty }}</span>
+          </div>
+          <span class="price">
+            ${{ (item.price * item.qty).toFixed(2) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="total">
+        <span>Total</span>
+        <strong>${{ total.toFixed(2) }}</strong>
+      </div>
+
+      <p v-if="error" class="error">{{ error }}</p>
+
+      <button
+        class="pay"
+        @click="payNow"
+        :disabled="loading || cart.items.length === 0"
+      >
+        {{ loading ? 'Redirecting...' : 'Pay with Stripe' }}
+      </button>
+
+      <button class="back" @click="router.back()">
+        ← Continue Shopping
+      </button>
     </div>
-
-    <h2>Total: ${{ total }}</h2>
-
-    <button class="pay" @click="payNow" :disabled="loading">
-      {{ loading ? 'Redirecting...' : 'Pay with Stripe' }}
-    </button>
-
-    <button class="back" @click="router.back()">← Go Back</button>
   </div>
 </template>
 
 <style scoped>
 .checkout {
-  max-width: 500px;
-  margin: auto;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f5f7;
   padding: 20px;
 }
 
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 18px;
+}
+
 .summary {
-  background: #f7f7f7;
-  padding: 15px;
-  border-radius: 12px;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  margin-bottom: 15px;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  margin: 6px 0;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.left {
+  display: flex;
+  gap: 6px;
+}
+
+.title {
+  font-weight: 500;
+}
+
+.qty {
+  color: #777;
+}
+
+.price {
+  font-weight: 500;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  margin: 15px 0;
+}
+
+.error {
+  color: #d93025;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .pay {
   width: 100%;
   padding: 12px;
-  background: black;
+  background: #111;
   color: white;
   border: none;
-  margin-top: 15px;
   border-radius: 8px;
+  font-size: 15px;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.pay:hover {
+  background: #000;
 }
 
 .pay:disabled {
@@ -99,8 +181,22 @@ const payNow = async () => {
 
 .back {
   width: 100%;
-  padding: 10px;
   margin-top: 10px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.back:hover {
+  background: #f1f1f1;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #777;
 }
 </style>
