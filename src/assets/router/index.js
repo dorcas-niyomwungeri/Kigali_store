@@ -46,7 +46,7 @@ const routes = [
     children: [
       { path: '', redirect: '/profile/orders' },
       { path: 'orders', component: () => import('@/views/ProfileOrders.vue') },
-      { path: 'wishlist', component: () => import('@/views/wishlist.vue') },
+      { path: 'wishlist', component: () => import('@/views/Wishlist.vue') },
       { path: 'settings', component: () => import('@/views/ProfileSettings.vue') }
     ]
   },
